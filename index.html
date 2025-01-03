@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Datos PR Jira</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Datos de la Tabla de Pull Request</h1>
+    <button id="exportButton">Exportar a Excel</button>
+
+    <table id="myTable">
+        <thead>
+            <tr>
+                <th>N°</th>
+                <th>Título</th>
+                <th>Rama Fuente</th>
+                <th>Repositorio</th>
+            </tr>
+        </thead>
+        <tbody id="data-table">
+        </tbody>
+    </table>
+
+    <script type="module">
+        import { dataOBJ } from './const.js';
+
+        console.log("dataOBJ", dataOBJ)
+        const extractedData = dataOBJ.map(item => ({
+            title: item.title || 'Sin título',
+            sourceBranch: item.source?.branch?.name || 'No especificado',
+            repositoryName: item.source?.repository?.name || 'No especificado',
+        }));
+
+        
+        const tableBody = document.getElementById('data-table');
+        
+        extractedData.forEach((item, index) => {
+
+            const row = document.createElement('tr');
+
+            const numCell = document.createElement('td');
+            numCell.textContent = index + 1; 
+
+            const titleCell = document.createElement('td');
+            titleCell.textContent = item.title;
+
+            const branchCell = document.createElement('td');
+            branchCell.textContent = item.sourceBranch;
+
+            const repoCell = document.createElement('td');
+            repoCell.textContent = item.repositoryName;
+
+            row.appendChild(numCell);
+            row.appendChild(titleCell);
+            row.appendChild(branchCell);
+            row.appendChild(repoCell);
+
+            tableBody.appendChild(row);
+        });
+
+        window.onload = function() {
+            document.getElementById('exportButton').addEventListener('click', function() {
+                var wb = XLSX.utils.table_to_book(document.getElementById('myTable'), {sheet: "Hoja 1"});
+                XLSX.writeFile(wb, "tabla.xlsx");
+            });
+        };
+
+    </script>
+</body>
+</html>
